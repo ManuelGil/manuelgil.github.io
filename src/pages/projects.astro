@@ -1,9 +1,8 @@
 ---
-import { info } from "@data";
-
-import ProjectsWrapper from "@components/general/ProjectsWrapper.astro";
-import MetaHead from "@components/general/MetaHead.astro";
-import Layout from "@layouts/Layout.astro";
+import MetaHead from '@components/general/MetaHead.astro';
+import ProjectsWrapper from '@components/general/ProjectsWrapper.astro';
+import { info } from '@data';
+import Layout from '@layouts/Layout.astro';
 
 const Projects = info.projects.map((project) => project);
 ---
@@ -12,8 +11,8 @@ const Projects = info.projects.map((project) => project);
 <html lang="en">
   <head>
     <MetaHead
-      title={"Proyectos"}
-      description={"Todos mis proyectos están disponibles en esta pagina."}
+      title="Proyectos"
+      description="Todos mis proyectos están disponibles en esta pagina."
     />
   </head>
 

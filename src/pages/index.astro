@@ -1,11 +1,10 @@
 ---
-import { info } from "@data";
-
-import Layout from "@layouts/Layout.astro";
-import Hero from "@components/home/Hero.astro";
-import Experience from "@components/home/Experience.astro";
-import ProjectsWrapper from "@components/general/ProjectsWrapper.astro";
-import MetaHead from "@components/general/MetaHead.astro";
+import MetaHead from '@components/general/MetaHead.astro';
+import ProjectsWrapper from '@components/general/ProjectsWrapper.astro';
+import Experience from '@components/home/Experience.astro';
+import Hero from '@components/home/Hero.astro';
+import { info } from '@data';
+import Layout from '@layouts/Layout.astro';
 
 const projects = info.projects.reduce((accumulator, project) => {
   if (accumulator.length < 6 && project.isFeatured) {
@@ -20,15 +19,15 @@ const projects = info.projects.reduce((accumulator, project) => {
   <head>
     <MetaHead
       title="Portafolio"
-      description=""
+      description="Soy Manuel Gil, desarrollador de software con 8 años de experiencia en el sector. Especializado en TypeScript, Angular, Nestjs, Go, Java y PHP. Mi pasión por el código abierto proviene de su gran impacto en nuestra vida cotidiana. Con habilidades en resolución de problemas, trabajo en equipo y conocimientos actualizados en nuevas tecnologías, mi objetivo es contribuir al desarrollo de soluciones tecnológicas que mejoren la vida de las personas."
     />
   </head>
 
   <body>
     <Layout>
       <Hero name={info.name} about="" />
-      <Experience title={"EXPERIENCIA"} details={info.experience} />
-      <Experience title={"EDUCACIÓN"} details={info.education} />
+      <Experience title={'EXPERIENCIA'} details={info.experience} />
+      <Experience title={'EDUCACIÓN'} details={info.education} />
       <section>
         <h2 class="w-[15rem] dark:text-light mt-16">PROYECTOS</h2>
         <ProjectsWrapper projects={projects} />

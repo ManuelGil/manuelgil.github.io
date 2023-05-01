@@ -3,11 +3,6 @@ export interface IMetaHead {
   description: string;
 }
 
-export interface IHeroProps {
-  name: string;
-  about: string;
-}
-
 export interface IExperience {
   name: string;
   location: string;
@@ -15,6 +10,7 @@ export interface IExperience {
   endDate: string;
   description: string[];
 }
+
 export interface IExperiences {
   title: string;
   details: IExperience[];
@@ -27,6 +23,7 @@ export interface IProject {
   githubUrl: string;
   liveUrl: string;
 }
+
 export interface IProjects {
   projects: IProject[];
 }
