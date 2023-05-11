@@ -3,12 +3,12 @@ export const info = {
 
   experience: [
     {
-      name: 'Senior Software Developer',
+      name: 'Full Stack Software Developer',
       location: 'Bogotá, Colombia',
       startDate: 'Oct 2021',
       endDate: 'Actualidad',
       description: [
-        '- Desarrollo de aplicaciones PHP Full Stack.',
+        '- Desarrollo de aplicaciones PHP.',
         '- Desarrollo de servicios API REST en PHP, Node, Nest y Go.',
         '- Desarrollo de Aplicaciones con Angular 12 y React 17.',
         '- Diseño de sitios web responsive utilizando Bootstrap 4 y 5.',
@@ -18,16 +18,17 @@ export const info = {
         '- Desarrollo de sistema de envío de correo con SendGrid.',
         '- Desarrollo de sistema de envío de SMS con Onurix.',
         '- Gestión y toma de requisitos para proyectos escalables.',
+        '- Scrum Master y metodologías ágiles.',
         '- Gestión del equipo de trabajo.',
       ],
     },
     {
-      name: 'Software Developer',
-      location: 'Cota, Colombia',
+      name: 'Full Stack Software Developer',
+      location: 'Bogotá, Colombia',
       startDate: 'Dic 2017',
       endDate: 'Nov 2019',
       description: [
-        '- Desarrollo de aplicaciones PHP Full Stack.',
+        '- Desarrollo de aplicaciones PHP.',
         '- Mantenimiento de plataformas con Magento.',
         '- Mantenimiento de plataformas con Drupal.',
         '- Mantenimiento de plataformas con Moodle.',
@@ -71,11 +72,16 @@ export const info = {
 
   projects: [
     {
-      title: 'Reset Windows Update Tool',
       isFeatured: true,
       thumbnail: '/assets/images/wureset.png',
       githubUrl: 'https://github.com/wureset-tools/wureset.com',
       liveUrl: 'https://wureset.com/',
+    },
+    {
+      isFeatured: true,
+      thumbnail: '/assets/images/linktree.png',
+      githubUrl: 'https://gitlab.com/imgildev/imgildev.gitlab.io',
+      liveUrl: 'https://manuelgil.dev/',
     },
   ],
 };
