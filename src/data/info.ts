@@ -79,6 +79,12 @@ export const info = {
     },
     {
       isFeatured: true,
+      thumbnail: '/assets/images/simplus.png',
+      githubUrl: 'https://github.com/ManuelGil/simplus',
+      liveUrl: 'https://simplus.website/',
+    },
+    {
+      isFeatured: true,
       thumbnail: '/assets/images/linktree.png',
       githubUrl: 'https://gitlab.com/imgildev/imgildev.gitlab.io',
       liveUrl: 'https://manuelgil.dev/',
