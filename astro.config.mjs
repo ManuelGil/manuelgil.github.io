@@ -5,7 +5,7 @@ import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://manuelgil.github.io',
+  site: 'https://manuelgil.me',
   base: '/',
   integrations: [
     tailwind(),
@@ -16,7 +16,7 @@ export default defineConfig({
       entryLimit: 10000,
     }),
     robotsTxt({
-      host: 'manuelgil.github.io',
+      host: 'manuelgil.me',
       policy: [
         {
           userAgent: 'Googlebot',
