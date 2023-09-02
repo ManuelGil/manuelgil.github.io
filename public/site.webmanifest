@@ -1,18 +1,7 @@
 {
-  "name": "",
-  "short_name": "",
-  "icons": [
-    {
-      "src": "/android-chrome-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/android-chrome-384x384.png",
-      "sizes": "384x384",
-      "type": "image/png"
-    }
-  ],
+  "name": "Manuel Gil 🦊 | @imgildev | Dev & Content Creator",
+  "short_name": "Manuel Gil",
+  "description": "Soy Manuel Gil, un desarrollador de software, creador de contenidos y un apasionado por el OpenSource. Me especializo en tecnologías como TypeScript, Java y PHP, entre otros.",
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
   "display": "standalone"

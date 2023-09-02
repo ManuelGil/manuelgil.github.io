@@ -1,5 +1,5 @@
 export const info = {
-  name: 'Manuel Gil',
+  name: 'Manuel Gil 🦊 | @imgildev | Dev & Content Creator',
 
   experience: [
     {

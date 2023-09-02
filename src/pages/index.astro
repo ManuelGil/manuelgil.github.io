@@ -14,18 +14,18 @@ const projects = info.projects.reduce((accumulator, project) => {
 }, []);
 ---
 
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="es">
   <head>
     <MetaHead
       title="Portafolio"
-      description="Soy Manuel Gil, desarrollador de software con 8 años de experiencia en el sector. Especializado en TypeScript, Angular, Nestjs, Go, Java y PHP. Mi pasión por el código abierto proviene de su gran impacto en nuestra vida cotidiana. Con habilidades en resolución de problemas, trabajo en equipo y conocimientos actualizados en nuevas tecnologías, mi objetivo es contribuir al desarrollo de soluciones tecnológicas que mejoren la vida de las personas."
+      description="Soy Manuel Gil, un desarrollador de software, creador de contenidos y un apasionado por el OpenSource. Me especializo en tecnologías como TypeScript, Java y PHP, entre otros."
     />
   </head>
 
   <body>
     <Layout>
-      <Hero name={info.name} about="" />
+      <Hero />
       <Experience title={'EXPERIENCIA'} details={info.experience} />
       <Experience title={'EDUCACIÓN'} details={info.education} />
       <section>
