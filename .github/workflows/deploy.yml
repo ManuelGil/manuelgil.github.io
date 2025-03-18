@@ -17,6 +17,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      PUBLIC_API_URL: ${{ secrets.PUBLIC_API_URL }}
+      PUBLIC_USE_MOCK_API: ${{ secrets.PUBLIC_USE_MOCK_API }}
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v3

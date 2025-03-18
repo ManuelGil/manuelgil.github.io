@@ -1,0 +1,68 @@
+---
+import type { Project } from '../types/Project';
+import ProjectCard from './ProjectCard.astro';
+
+interface Props {
+  projects: Project[];
+}
+
+const { projects: initialProjects } = Astro.props;
+---
+
+<div class="mx-auto max-w-5xl">
+  <!-- Projects Grid -->
+  <div
+    class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+    id="projects"
+    data-initial-projects={JSON.stringify(initialProjects)}
+  >
+    {initialProjects.map((project) => <ProjectCard {...project} />)}
+  </div>
+
+  <!-- Empty State (hidden by default) -->
+  <div id="empty-state" class="hidden py-12 text-center">
+    <p class="text-gray-500">No projects found in this category.</p>
+  </div>
+</div>
+
+<script>
+  import { ProjectsManager } from '../services/projectsManager';
+  import { ProjectCache } from '../services/projectCache';
+
+  // Initialize with server-side data
+  const projectsContainer = document.getElementById('projects');
+  const initialProjects = JSON.parse(
+    projectsContainer?.dataset.initialProjects || '[]',
+  );
+
+  // Function to update projects display
+  async function updateProjects() {
+    try {
+      // Check cache first
+      const cachedProjects = ProjectCache.getProjects();
+      if (cachedProjects) {
+        console.log('Using cached projects');
+        return cachedProjects;
+      }
+
+      // If no cache, fetch new data
+      const projectsManager = new ProjectsManager();
+      const projects = await projectsManager.getProjectsList();
+
+      // Store in cache
+      ProjectCache.setProjects(projects);
+
+      return projects;
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      return initialProjects; // Fallback to initial data
+    }
+  }
+
+  // Update projects after initial load
+  if (document.readyState === 'complete') {
+    updateProjects();
+  } else {
+    window.addEventListener('load', updateProjects);
+  }
+</script>
