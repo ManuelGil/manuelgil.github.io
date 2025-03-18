@@ -10,6 +10,20 @@ const { projects: initialProjects } = Astro.props;
 ---
 
 <div class="mx-auto max-w-5xl">
+  <!-- Loading State -->
+  <div id="loading-state" class="hidden py-12 text-center">
+    <div
+      class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+      role="status"
+    >
+      <span
+        class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
+      >
+        Loading...
+      </span>
+    </div>
+  </div>
+
   <!-- Projects Grid -->
   <div
     class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
@@ -19,7 +33,7 @@ const { projects: initialProjects } = Astro.props;
     {initialProjects.map((project) => <ProjectCard {...project} />)}
   </div>
 
-  <!-- Empty State (hidden by default) -->
+  <!-- Empty State -->
   <div id="empty-state" class="hidden py-12 text-center">
     <p class="text-gray-500">No projects found in this category.</p>
   </div>
@@ -31,38 +45,168 @@ const { projects: initialProjects } = Astro.props;
 
   // Initialize with server-side data
   const projectsContainer = document.getElementById('projects');
+  const emptyState = document.getElementById('empty-state');
+  const loadingState = document.getElementById('loading-state');
   const initialProjects = JSON.parse(
     projectsContainer?.dataset.initialProjects || '[]',
   );
 
-  // Function to update projects display
+  // Function to render a single project card with performance optimizations
+  function renderProjectCard(project) {
+    const template = document.createElement('template');
+    template.innerHTML = `
+      <div class="overflow-hidden rounded-lg bg-white shadow-md transition-shadow hover:shadow-lg">
+        <div class="p-6">
+          <h3 class="mb-2 text-xl font-semibold text-gray-900">
+            ${project.title}
+          </h3>
+          <p class="mb-4 text-gray-600">
+            ${project.description}
+          </p>
+          <div class="mb-4 flex flex-wrap gap-2">
+            ${project.tags
+              .map(
+                (tag) => `
+              <span class="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600">
+                ${tag}
+              </span>
+            `,
+              )
+              .join('')}
+          </div>
+
+          <!-- Links -->
+          <div class="flex gap-4 border-t border-gray-100 pt-4">
+            <a
+              href="${project.links.source}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group inline-flex items-center gap-2 text-sm text-gray-600 transition-colors hover:text-[#ff6b00]"
+            >
+              <svg
+                class="h-5 w-5 transition-transform group-hover:scale-110"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+                ></path>
+              </svg>
+              View Source
+            </a>
+            <a
+              href="${project.links.demo}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group ml-auto inline-flex items-center gap-2 text-sm text-gray-600 transition-colors hover:text-[#0070ba]"
+            >
+              <svg
+                class="h-5 w-5 transition-transform group-hover:scale-110"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  d="M14 4h-13v18h20v-11h1v12h-22v-20h14v1zm10 5h-1v-6.293l-11.646 11.647-.708-.708 11.647-11.646h-6.293v-1h8v8z"
+                ></path>
+              </svg>
+              Live Demo
+            </a>
+          </div>
+        </div>
+      </div>
+    `.trim();
+    return template.content.firstElementChild;
+  }
+
+  // Function to update projects display with performance optimizations
   async function updateProjects() {
     try {
-      // Check cache first
+      if (loadingState) loadingState.style.display = 'block';
+      if (projectsContainer) projectsContainer.style.display = 'none';
+      if (emptyState) emptyState.style.display = 'none';
+
+      let projects;
+
+      // Check cache first using a debounced approach
       const cachedProjects = ProjectCache.getProjects();
       if (cachedProjects) {
         console.log('Using cached projects');
-        return cachedProjects;
+        projects = cachedProjects;
+      } else {
+        // If no cache, fetch new data
+        const projectsManager = new ProjectsManager();
+        projects = await projectsManager.getProjectsList();
+        // Store in cache with expiration
+        ProjectCache.setProjects(projects);
       }
 
-      // If no cache, fetch new data
-      const projectsManager = new ProjectsManager();
-      const projects = await projectsManager.getProjectsList();
+      // Update DOM with new projects using DocumentFragment for better performance
+      if (projectsContainer && projects.length > 0) {
+        const fragment = document.createDocumentFragment();
+        projects.forEach((project) => {
+          const card = renderProjectCard(project);
+          // Asegurar que el atributo data-category esté establecido
+          if (card) {
+            card.setAttribute('data-category', project.category);
+            fragment.appendChild(card);
+          }
+        });
 
-      // Store in cache
-      ProjectCache.setProjects(projects);
+        projectsContainer.innerHTML = '';
+        projectsContainer.appendChild(fragment);
+
+        if (loadingState) loadingState.style.display = 'none';
+        projectsContainer.style.display = 'grid';
+        if (emptyState) emptyState.style.display = 'none';
+
+        // Disparar un evento personalizado para notificar que los proyectos se han actualizado
+        window.dispatchEvent(new CustomEvent('projectsUpdated'));
+      } else if (emptyState) {
+        if (loadingState) loadingState.style.display = 'none';
+        if (projectsContainer) projectsContainer.style.display = 'none';
+        emptyState.style.display = 'block';
+      }
 
       return projects;
     } catch (error) {
       console.error('Error fetching projects:', error);
-      return initialProjects; // Fallback to initial data
+      if (loadingState) loadingState.style.display = 'none';
+      return initialProjects;
     }
   }
 
-  // Update projects after initial load
+  // Optimized event handling with requestAnimationFrame
+  let updateTimeout: number | null = null;
+  function debouncedUpdate() {
+    if (updateTimeout) {
+      window.cancelAnimationFrame(updateTimeout);
+    }
+    updateTimeout = window.requestAnimationFrame(() => {
+      updateProjects();
+    });
+  }
+
+  // Update projects after initial load with optimized timing
   if (document.readyState === 'complete') {
-    updateProjects();
+    debouncedUpdate();
   } else {
-    window.addEventListener('load', updateProjects);
+    window.addEventListener('load', debouncedUpdate, { once: true });
   }
 </script>
+
+<style>
+  .grid {
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  .grid.loading {
+    opacity: 0;
+  }
+
+  #projects > div {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.3s ease;
+  }
+</style>

@@ -1,6 +1,4 @@
 ---
-import { Filter } from 'lucide-astro';
-
 interface Props {
   categories: string[];
 }
@@ -8,153 +6,130 @@ interface Props {
 const { categories } = Astro.props;
 ---
 
-<div class="mx-auto max-w-5xl">
-  <div class="mb-6 flex items-center gap-2">
-    <Filter class="h-5 w-5 text-gray-500" />
-    <div class="flex flex-wrap gap-2" id="categories">
-      {
-        categories.map((category) => (
-          <button
-            class="category-btn rounded-full bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 data-[active=true]:bg-blue-500 data-[active=true]:text-white"
-            data-category={category}
-            data-active={category === 'All'}
-          >
-            {category}
-          </button>
-        ))
-      }
+<island>
+  <div class="mb-8">
+    <div class="mx-auto max-w-5xl">
+      <div class="flex flex-wrap justify-center gap-4" id="category-filter">
+        {
+          categories.map((category) => (
+            <button
+              class="rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-600 shadow-sm transition-all hover:bg-gray-50 hover:shadow-md data-[active=true]:bg-[#ff6b00] data-[active=true]:text-white"
+              data-category={category}
+              data-active={category === 'All'}
+            >
+              {category}
+            </button>
+          ))
+        }
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-  import { ProjectsManager } from '../services/projectsManager';
-  import { ProjectCache } from '../services/projectCache';
+  <script>
+    class CategoryFilter {
+      private buttons: NodeListOf<HTMLButtonElement>;
+      private projectCards: NodeListOf<HTMLElement>;
+      private currentCategory: string = 'All';
 
-  const categoryButtons = document.querySelectorAll('.category-btn');
-  const projectsContainer = document.getElementById('projects');
-  const emptyState = document.getElementById('empty-state');
-  let currentProjects = [];
-
-  // Function to update projects display
-  async function loadProjects() {
-    try {
-      // Check cache first
-      const cachedProjects = ProjectCache.getProjects();
-      if (cachedProjects) {
-        console.log('Using cached projects');
-        currentProjects = cachedProjects;
-        return;
+      constructor() {
+        this.buttons = document.querySelectorAll('[data-category]');
+        this.projectCards = document.querySelectorAll('#projects > div');
+        this.initializeEventListeners();
+        this.filterProjects(); // Aplicar filtro inicial
       }
 
-      // If no cache, fetch new data
-      const projectsManager = new ProjectsManager();
-      currentProjects = await projectsManager.getProjectsList();
+      private initializeEventListeners(): void {
+        this.buttons.forEach((button) => {
+          button.addEventListener('click', () => {
+            this.handleCategoryClick(button);
+          });
+        });
+      }
 
-      // Store in cache
-      ProjectCache.setProjects(currentProjects);
-    } catch (error) {
-      console.error('Error fetching projects:', error);
-      // Use initial projects from data attribute as fallback
-      currentProjects = JSON.parse(
-        projectsContainer?.dataset.initialProjects || '[]',
-      );
+      private handleCategoryClick(clickedButton: HTMLButtonElement): void {
+        // Actualizar estado de los botones
+        this.buttons.forEach((button) => {
+          button.dataset.active = (button === clickedButton).toString();
+          if (button === clickedButton) {
+            button.classList.add('bg-[#ff6b00]', 'text-white');
+          } else {
+            button.classList.remove('bg-[#ff6b00]', 'text-white');
+          }
+        });
+
+        // Obtener categoría seleccionada
+        this.currentCategory = clickedButton.dataset.category || 'All';
+
+        // Filtrar proyectos con animación
+        requestAnimationFrame(() => this.filterProjects());
+      }
+
+      private filterProjects(): void {
+        const projectsContainer = document.getElementById('projects');
+        const emptyState = document.getElementById('empty-state');
+        let visibleCount = 0;
+
+        // Actualizar visibilidad de las tarjetas
+        this.projectCards = document.querySelectorAll('#projects > div'); // Actualizar lista de tarjetas
+        this.projectCards.forEach((card) => {
+          const cardCategory = card.getAttribute('data-category');
+          const shouldShow =
+            this.currentCategory === 'All' ||
+            cardCategory === this.currentCategory;
+
+          if (shouldShow) {
+            card.style.display = '';
+            setTimeout(() => {
+              card.style.opacity = '1';
+              card.style.transform = 'translateY(0)';
+            }, 10);
+            visibleCount++;
+          } else {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+              if (
+                this.currentCategory !== 'All' &&
+                cardCategory !== this.currentCategory
+              ) {
+                card.style.display = 'none';
+              }
+            }, 300);
+          }
+        });
+
+        // Mostrar/ocultar estado vacío
+        if (projectsContainer && emptyState) {
+          if (visibleCount === 0) {
+            projectsContainer.style.display = 'none';
+            emptyState.style.display = 'block';
+          } else {
+            projectsContainer.style.display = 'grid';
+            emptyState.style.display = 'none';
+          }
+        }
+      }
     }
-  }
 
-  // Function to filter and display projects
-  function filterProjects(category: string) {
-    if (!projectsContainer) return;
+    // Inicializar cuando el DOM esté listo
+    const init = () => {
+      new CategoryFilter();
+    };
 
-    const filteredProjects =
-      category === 'All'
-        ? currentProjects
-        : currentProjects.filter((project) => project.category === category);
-
-    // Update active state of buttons
-    categoryButtons.forEach((btn) => {
-      btn.dataset.active = (btn.dataset.category === category).toString();
-    });
-
-    // Update projects display
-    if (filteredProjects.length === 0) {
-      projectsContainer.classList.add('hidden');
-      emptyState?.classList.remove('hidden');
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
     } else {
-      projectsContainer.classList.remove('hidden');
-      emptyState?.classList.add('hidden');
-
-      // Update project grid
-      projectsContainer.innerHTML = filteredProjects
-        .map(
-          (project) => `
-          <article class="group relative rounded-lg bg-white p-6 shadow-md transition-all hover:shadow-lg">
-            <h3 class="mb-2 text-xl font-semibold text-gray-900">${project.title}</h3>
-            <p class="mb-4 text-gray-600">${project.description}</p>
-            <div class="mb-4 flex flex-wrap gap-2">
-              ${project.tags
-                .map(
-                  (tag) => `
-                <span class="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-600">
-                  ${tag}
-                </span>
-              `,
-                )
-                .join('')}
-            </div>
-            <div class="flex gap-4">
-              <a
-                href="${project.links.source}"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800"
-              >
-                Source Code
-                <svg class="ml-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-                  <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
-                </svg>
-              </a>
-              <a
-                href="${project.links.demo}"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800"
-              >
-                Live Demo
-                <svg class="ml-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-                  <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
-                </svg>
-              </a>
-            </div>
-          </article>
-        `,
-        )
-        .join('');
+      init();
     }
-  }
+  </script>
 
-  // Initialize
-  async function init() {
-    await loadProjects();
+  <style>
+    button {
+      transition: all 0.3s ease;
+    }
 
-    // Add click handlers to category buttons
-    categoryButtons.forEach((button) => {
-      button.addEventListener('click', () => {
-        const category = button.dataset.category;
-        if (category) filterProjects(category);
-      });
-    });
-
-    // Initial filter (All)
-    filterProjects('All');
-  }
-
-  // Run initialization
-  if (document.readyState === 'complete') {
-    init();
-  } else {
-    window.addEventListener('load', init);
-  }
-</script>
+    #projects > div {
+      transition: all 0.3s ease;
+    }
+  </style>
+</island>
