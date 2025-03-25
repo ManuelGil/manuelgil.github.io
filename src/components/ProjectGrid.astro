@@ -30,7 +30,6 @@ const { projects: initialProjects } = Astro.props;
     id="projects"
     data-initial-projects={JSON.stringify(initialProjects)}
   >
-    {initialProjects.map((project) => <ProjectCard {...project} />)}
   </div>
 
   <!-- Empty State -->
@@ -55,7 +54,7 @@ const { projects: initialProjects } = Astro.props;
   function renderProjectCard(project) {
     const template = document.createElement('template');
     template.innerHTML = `
-      <div class="overflow-hidden rounded-lg bg-white shadow-md transition-shadow hover:shadow-lg">
+      <div class="overflow-hidden rounded-lg bg-white shadow-md transition-shadow hover:shadow-lg" data-category="${project.category}">
         <div class="p-6">
           <h3 class="mb-2 text-xl font-semibold text-gray-900">
             ${project.title}
@@ -114,83 +113,137 @@ const { projects: initialProjects } = Astro.props;
           </div>
         </div>
       </div>
-    `.trim();
+    `;
     return template.content.firstElementChild;
   }
 
-  // Function to update projects display with performance optimizations
+  // Store all projects in memory for efficient filtering
+  let allProjects = [...initialProjects];
+  let currentCategory = 'All';
+
+  // Pre-render all cards and store them in a fragment for faster DOM operations
+  const projectCardsMap = new Map();
+
+  function createAllProjectCards() {
+    allProjects.forEach((project) => {
+      if (!projectCardsMap.has(project.title)) {
+        const card = renderProjectCard(project);
+        projectCardsMap.set(project.title, card);
+      }
+    });
+  }
+
+  // Apply filter and update the display efficiently
+  function filterProjects(category) {
+    if (!projectsContainer) return;
+
+    currentCategory = category;
+
+    // Create a document fragment for batch DOM updates
+    const fragment = document.createDocumentFragment();
+    let visibleCount = 0;
+
+    // Clear current display
+    while (projectsContainer.firstChild) {
+      projectsContainer.removeChild(projectsContainer.firstChild);
+    }
+
+    // Add only the relevant projects
+    allProjects.forEach((project) => {
+      if (category === 'All' || project.category === category) {
+        visibleCount++;
+        const card = projectCardsMap.get(project.title).cloneNode(true);
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+        fragment.appendChild(card);
+      }
+    });
+
+    // Single DOM update
+    projectsContainer.appendChild(fragment);
+
+    // Update visibility of containers
+    if (emptyState) {
+      emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+    }
+
+    projectsContainer.style.display = visibleCount === 0 ? 'none' : 'grid';
+  }
+
+  // Function to initialize the projects display
+  function initializeProjectsDisplay() {
+    // Pre-render all project cards
+    createAllProjectCards();
+
+    // Apply the initial filter
+    filterProjects('All');
+
+    // Hide loading state if there are projects
+    if (emptyState && allProjects.length > 0) {
+      emptyState.style.display = 'none';
+    }
+
+    // Show projects container if there are projects
+    if (projectsContainer && allProjects.length > 0) {
+      projectsContainer.style.display = 'grid';
+    }
+  }
+
+  // Listen for category filter changes
+  document.addEventListener('DOMContentLoaded', () => {
+    // Inicializar la visualización
+    initializeProjectsDisplay();
+
+    // Listen for category changes
+    const categoryButtons = document.querySelectorAll(
+      '#category-filter button',
+    );
+    categoryButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const category = button.getAttribute('data-category') || 'All';
+        if (category !== currentCategory) {
+          filterProjects(category);
+        }
+      });
+    });
+  });
+
+  // Initialize projects display immediately if the DOM is already loaded
+  if (document.readyState !== 'loading') {
+    initializeProjectsDisplay();
+  }
+
+  // Fetch and update projects data
   async function updateProjects() {
     try {
       if (loadingState) loadingState.style.display = 'block';
       if (projectsContainer) projectsContainer.style.display = 'none';
       if (emptyState) emptyState.style.display = 'none';
 
-      let projects;
+      const projectsManager = new ProjectsManager();
+      const projects = await projectsManager.getProjectsList();
 
-      // Check cache first using a debounced approach
-      const cachedProjects = ProjectCache.getProjects();
-      if (cachedProjects) {
-        console.log('Using cached projects');
-        projects = cachedProjects;
-      } else {
-        // If no cache, fetch new data
-        const projectsManager = new ProjectsManager();
-        projects = await projectsManager.getProjectsList();
-        // Store in cache with expiration
-        ProjectCache.setProjects(projects);
-      }
+      // Update our in-memory projects list
+      allProjects = projects;
 
-      // Update DOM with new projects using DocumentFragment for better performance
-      if (projectsContainer && projects.length > 0) {
-        const fragment = document.createDocumentFragment();
-        projects.forEach((project) => {
-          const card = renderProjectCard(project);
-          // Asegurar que el atributo data-category esté establecido
-          if (card) {
-            card.setAttribute('data-category', project.category);
-            fragment.appendChild(card);
-          }
-        });
+      // Update the card map with any new projects
+      createAllProjectCards();
 
-        projectsContainer.innerHTML = '';
-        projectsContainer.appendChild(fragment);
+      // Apply current filter
+      filterProjects(currentCategory);
 
-        if (loadingState) loadingState.style.display = 'none';
-        projectsContainer.style.display = 'grid';
-        if (emptyState) emptyState.style.display = 'none';
-
-        // Disparar un evento personalizado para notificar que los proyectos se han actualizado
-        window.dispatchEvent(new CustomEvent('projectsUpdated'));
-      } else if (emptyState) {
-        if (loadingState) loadingState.style.display = 'none';
-        if (projectsContainer) projectsContainer.style.display = 'none';
-        emptyState.style.display = 'block';
-      }
-
-      return projects;
-    } catch (error) {
-      console.error('Error fetching projects:', error);
       if (loadingState) loadingState.style.display = 'none';
-      return initialProjects;
+    } catch (error) {
+      console.error('Error updating projects:', error);
+      if (loadingState) loadingState.style.display = 'none';
+      // Fallback to showing whatever we have
+      if (projectsContainer) projectsContainer.style.display = 'grid';
     }
   }
 
-  // Optimized event handling with requestAnimationFrame
-  let updateTimeout: number | null = null;
-  function debouncedUpdate() {
-    if (updateTimeout) {
-      window.cancelAnimationFrame(updateTimeout);
-    }
-    updateTimeout = window.requestAnimationFrame(() => {
-      updateProjects();
-    });
-  }
-
-  // Update projects after initial load with optimized timing
-  if (document.readyState === 'complete') {
-    debouncedUpdate();
-  } else {
-    window.addEventListener('load', debouncedUpdate, { once: true });
+  // Only fetch from API if not in cache
+  if (!ProjectCache.getProjects()) {
+    updateProjects();
   }
 </script>
 

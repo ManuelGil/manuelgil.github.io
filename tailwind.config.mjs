@@ -6,14 +6,14 @@ export default {
       colors: {
         primary: {
           DEFAULT: '#ff6b00',
-          hover: '#ff8533'
+          hover: '#ff8533',
         },
         accent: {
           DEFAULT: '#0066cc',
-          hover: '#0080ff'
-        }
-      }
-    }
+          hover: '#0080ff',
+        },
+      },
+    },
   },
-  plugins: []
-}
+  plugins: [],
+};

@@ -15,7 +15,7 @@ export class ProjectAPI implements API {
     try {
       const response = await this.api.get('/projects');
       return response.data as Project[];
-    } catch (error) {
+    } catch {
       throw new Error('Failed to fetch projects');
     }
   }
