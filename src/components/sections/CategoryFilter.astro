@@ -1,4 +1,6 @@
 ---
+import CategoryChip from '../atoms/CategoryChip.astro';
+
 interface Props {
   categories: string[];
 }
@@ -6,19 +8,18 @@ interface Props {
 const { categories } = Astro.props;
 ---
 
-<island>
+<island client:load>
   <div class="mb-8">
     <div class="mx-auto max-w-5xl">
       <div class="flex flex-wrap justify-center gap-4" id="category-filter">
         {
           categories.map((category) => (
-            <button
-              class="rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-600 shadow-sm transition-all hover:bg-gray-50 hover:shadow-md data-[active=true]:bg-[#ff6b00] data-[active=true]:text-white"
+            <CategoryChip
+              label={category}
+              active={category === 'All'}
               data-category={category}
               data-active={category === 'All'}
-            >
-              {category}
-            </button>
+            />
           ))
         }
       </div>
@@ -27,7 +28,7 @@ const { categories } = Astro.props;
 
   <script>
     class CategoryFilter {
-      private buttons: NodeListOf<HTMLButtonElement>;
+      private buttons: NodeListOf<HTMLElement>;
       private projectCards: NodeListOf<HTMLElement>;
       private currentCategory: string = 'All';
 
@@ -35,32 +36,55 @@ const { categories } = Astro.props;
         this.buttons = document.querySelectorAll('[data-category]');
         this.projectCards = document.querySelectorAll('#projects > div');
         this.initializeEventListeners();
-        this.filterProjects(); // Aplicar filtro inicial
+
+        // Force activation of "All" at startup
+        const defaultBtn = Array.from(this.buttons).find(
+          (btn) => btn.dataset.category === 'All',
+        );
+        if (defaultBtn) {
+          this.handleCategoryClick(defaultBtn as HTMLButtonElement);
+        } else {
+          console.warn(
+            '[CategoryFilter][constructor] no "All" button found – running filter directly',
+          );
+          this.filterProjects();
+        }
       }
 
       private initializeEventListeners(): void {
         this.buttons.forEach((button) => {
           button.addEventListener('click', () => {
-            this.handleCategoryClick(button);
+            this.handleCategoryClick(button as HTMLButtonElement);
           });
         });
       }
 
       private handleCategoryClick(clickedButton: HTMLButtonElement): void {
-        // Actualizar estado de los botones
         this.buttons.forEach((button) => {
-          button.dataset.active = (button === clickedButton).toString();
-          if (button === clickedButton) {
-            button.classList.add('bg-[#ff6b00]', 'text-white');
+          const isActive = button === clickedButton;
+          button.dataset.active = String(isActive);
+
+          // Classes for the active state
+          const activeClasses = ['bg-primary', 'text-white'];
+          // Classes for the inactive state
+          const inactiveClasses = [
+            'bg-white',
+            'text-gray-600',
+            'hover:bg-gray-50',
+            'hover:shadow-md',
+          ];
+
+          if (isActive) {
+            button.classList.remove(...inactiveClasses);
+            button.classList.add(...activeClasses);
           } else {
-            button.classList.remove('bg-[#ff6b00]', 'text-white');
+            button.classList.remove(...activeClasses);
+            button.classList.add(...inactiveClasses);
           }
         });
 
-        // Obtener categoría seleccionada
         this.currentCategory = clickedButton.dataset.category || 'All';
 
-        // Filtrar proyectos con animación
         requestAnimationFrame(() => this.filterProjects());
       }
 
@@ -69,8 +93,7 @@ const { categories } = Astro.props;
         const emptyState = document.getElementById('empty-state');
         let visibleCount = 0;
 
-        // Actualizar visibilidad de las tarjetas
-        this.projectCards = document.querySelectorAll('#projects > div'); // Actualizar lista de tarjetas
+        this.projectCards = document.querySelectorAll('#projects > div');
         this.projectCards.forEach((card) => {
           const cardCategory = card.getAttribute('data-category');
           const shouldShow =
@@ -98,7 +121,6 @@ const { categories } = Astro.props;
           }
         });
 
-        // Mostrar/ocultar estado vacío
         if (projectsContainer && emptyState) {
           if (visibleCount === 0) {
             projectsContainer.style.display = 'none';
@@ -111,7 +133,6 @@ const { categories } = Astro.props;
       }
     }
 
-    // Inicializar cuando el DOM esté listo
     const init = () => {
       new CategoryFilter();
     };

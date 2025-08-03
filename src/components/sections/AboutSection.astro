@@ -1,0 +1,95 @@
+---
+import type { Achievement } from '../../types/Achievement';
+import { achievements } from '../../data/achievements';
+---
+
+<section
+  id="about"
+  class="bg-gray-100 px-4 py-16 sm:px-6 lg:px-8"
+  aria-labelledby="about-heading"
+>
+  <div class="container">
+    <h2 id="about-heading" class="section-title text-gray-900">About Me</h2>
+    <p class="mx-auto mb-8 mt-4 max-w-2xl text-center text-gray-700">
+      Passionate full stack developer focused on building efficient, scalable,
+      and user-friendly digital solutions. I enjoy creating tools that empower
+      developers and improve workflows. My experience spans frontend, backend,
+      and open-source projects, always with attention to detail and modern best
+      practices.
+    </p>
+    <div
+      class="grid grid-cols-1 gap-6 sm:grid-cols-2"
+      aria-labelledby="highlights-heading"
+    >
+      {
+        achievements.map((achievement, index) => (
+          <div
+            class="achievement-card fade-in-up p-6"
+            style={`--index: ${index}`}
+          >
+            <div class="mb-4 flex items-center">
+              <div class="group mr-3 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white">
+                <span
+                  class="material-symbols-outlined transition-transform group-hover:scale-110"
+                  aria-hidden="true"
+                >
+                  {achievement.icon}
+                </span>
+              </div>
+              <h3 class="text-xl font-bold text-white">{achievement.title}</h3>
+            </div>
+
+            <p class="text-muted">{achievement.description}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<!-- The styles for this component are now centralized in global.css -->
+
+<!-- Load Material Symbols icons -->
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+/>
+
+<script>
+  // Animation when scrolling to the section
+  document.addEventListener('DOMContentLoaded', () => {
+    const aboutSection = document.getElementById('about');
+
+    // Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+
+    if (aboutSection && !prefersReducedMotion) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const cards = aboutSection.querySelectorAll('.achievement-card');
+
+              cards.forEach((card, index) => {
+                setTimeout(() => {
+                  card.classList.add('visible');
+                }, index * 150);
+              });
+
+              observer.unobserve(aboutSection);
+            }
+          });
+        },
+        { threshold: 0.2 },
+      );
+
+      observer.observe(aboutSection);
+    } else if (aboutSection && prefersReducedMotion) {
+      // If user prefers reduced motion, make everything visible immediately
+      const cards = aboutSection.querySelectorAll('.achievement-card');
+      cards.forEach((card) => card.classList.add('visible'));
+    }
+  });
+</script>

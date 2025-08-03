@@ -1,0 +1,233 @@
+---
+
+---
+
+<header
+  class="fixed left-0 top-0 z-50 w-full bg-white py-4 shadow-md transition-all duration-300"
+>
+  <div class="container mx-auto flex items-center justify-between px-4">
+    <!-- Logo -->
+    <a
+      href="#top"
+      class="text-xl font-bold text-gray-900 transition-colors hover:text-primary"
+      >MG</a
+    >
+
+    <!-- Navigation Links (Desktop) -->
+    <nav class="hidden space-x-6 md:flex">
+      <a
+        href="#top"
+        class="nav-link relative text-gray-700 transition-colors hover:text-primary"
+        >Home</a
+      >
+      <a
+        href="#projects"
+        class="nav-link relative text-gray-700 transition-colors hover:text-primary"
+        >Projects</a
+      >
+      <a
+        href="#skills"
+        class="nav-link relative text-gray-700 transition-colors hover:text-primary"
+        >Skills</a
+      >
+      <a
+        href="#about"
+        class="nav-link relative text-gray-700 transition-colors hover:text-primary"
+        >About</a
+      >
+      <a
+        href="#contact"
+        class="nav-link relative text-gray-700 transition-colors hover:text-primary"
+        >Contact</a
+      >
+    </nav>
+
+    <!-- Mobile Menu Button -->
+    <button
+      id="mobile-menu-button"
+      class="flex items-center md:hidden"
+      aria-label="Toggle Menu"
+      aria-expanded="false"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        class="h-6 w-6 text-gray-700 transition-transform duration-300"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 6h16M4 12h16m-7 6h7"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile Navigation Menu -->
+  <div
+    id="mobile-menu"
+    class="hidden -translate-y-full transform border-t border-gray-200 bg-white pb-4 opacity-0 shadow-lg transition-all duration-300 md:hidden"
+  >
+    <div class="flex flex-col space-y-3 px-4 pt-2">
+      <a
+        href="#top"
+        class="nav-link-mobile relative py-2 text-gray-700 transition-all hover:text-primary"
+        >Home</a
+      >
+      <a
+        href="#projects"
+        class="nav-link-mobile relative py-2 text-gray-700 transition-all hover:text-primary"
+        >Projects</a
+      >
+      <a
+        href="#skills"
+        class="nav-link-mobile relative py-2 text-gray-700 transition-all hover:text-primary"
+        >Skills</a
+      >
+      <a
+        href="#about"
+        class="nav-link-mobile relative py-2 text-gray-700 transition-all hover:text-primary"
+        >About</a
+      >
+      <a
+        href="#contact"
+        class="nav-link-mobile relative py-2 text-gray-700 transition-all hover:text-primary"
+        >Contact</a
+      >
+    </div>
+  </div>
+</header>
+
+<script>
+  const mobileMenuButton = document.getElementById('mobile-menu-button');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const menuIcon = mobileMenuButton?.querySelector('svg');
+
+  function toggleMenu() {
+    const isExpanded =
+      mobileMenuButton?.getAttribute('aria-expanded') === 'true';
+
+    if (isExpanded) {
+      mobileMenu?.classList.remove('translate-y-0', 'opacity-100');
+      mobileMenu?.classList.add('-translate-y-full', 'opacity-0');
+      menuIcon?.classList.remove('rotate-90');
+    } else {
+      mobileMenu?.classList.remove('-translate-y-full', 'opacity-0');
+      mobileMenu?.classList.add('translate-y-0', 'opacity-100');
+      menuIcon?.classList.add('rotate-90');
+    }
+
+    mobileMenuButton?.setAttribute('aria-expanded', (!isExpanded).toString());
+  }
+
+  mobileMenuButton?.addEventListener('click', toggleMenu);
+
+  const mobileMenuLinks = mobileMenu?.querySelectorAll('a');
+  mobileMenuLinks?.forEach((link) => {
+    link.addEventListener('click', () => {
+      mobileMenuButton?.setAttribute('aria-expanded', 'false');
+      mobileMenu?.classList.remove('translate-y-0', 'opacity-100');
+      mobileMenu?.classList.add('-translate-y-full', 'opacity-0');
+      menuIcon?.classList.remove('rotate-90');
+    });
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const sections = document.querySelectorAll(
+      'section[id], header[id], div[id="projects"]',
+    );
+    const navLinks = document.querySelectorAll('.nav-link');
+    const mobileNavLinks = document.querySelectorAll('.nav-link-mobile');
+
+    const activateLink = (id) => {
+      navLinks.forEach((link) => {
+        const href = link.getAttribute('href');
+        if (href === `#${id}`) {
+          link.classList.add('active', 'text-primary');
+          link.classList.remove('text-gray-700');
+        } else {
+          link.classList.remove('active', 'text-primary');
+          link.classList.add('text-gray-700');
+        }
+      });
+
+      mobileNavLinks.forEach((link) => {
+        const href = link.getAttribute('href');
+        if (href === `#${id}`) {
+          link.classList.add('active', 'text-primary');
+          link.classList.remove('text-gray-700');
+        } else {
+          link.classList.remove('active', 'text-primary');
+          link.classList.add('text-gray-700');
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+            const id = entry.target.getAttribute('id');
+            activateLink(id);
+          }
+        });
+      },
+      { threshold: 0.5, rootMargin: '-100px 0px -20% 0px' },
+    );
+
+    sections.forEach((section) => {
+      observer.observe(section);
+    });
+
+    const checkInitialActive = () => {
+      let found = false;
+      for (const section of sections) {
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= 100 && rect.bottom >= 100) {
+          activateLink(section.id);
+          found = true;
+          break;
+        }
+      }
+      if (!found && sections.length > 0) {
+        activateLink(sections[0].id);
+      }
+    };
+
+    checkInitialActive();
+  });
+</script>
+
+<style>
+  .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--color-primary);
+    transform-origin: center;
+    transform: scaleX(1);
+    transition: transform 0.3s ease;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--color-primary);
+    transform-origin: center;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+
+  .nav-link:hover::after {
+    transform: scaleX(1);
+  }
+</style>

@@ -1,0 +1,91 @@
+---
+import { contactLinks } from '../../data/contactLinks';
+---
+
+<section
+  id="contact"
+  class="bg-gray-900 px-4 py-20 sm:px-6 lg:px-8"
+  aria-labelledby="contact-heading"
+>
+  <div class="mx-auto max-w-3xl">
+    <h2
+      id="contact-heading"
+      class="relative mb-16 text-center text-3xl font-bold text-white after:absolute after:bottom-[-15px] after:left-1/2 after:h-1 after:w-24 after:translate-x-[-50%] after:rounded-full after:bg-[#ff6b00] sm:text-4xl"
+    >
+      Get In Touch
+    </h2>
+
+    <p class="mb-10 text-center text-lg text-gray-300">
+      Have a project in mind or just want to connect? Feel free to reach out
+      through any of these platforms.
+    </p>
+
+    <div
+      class="contact-links-container flex flex-wrap items-center justify-center gap-6"
+    >
+      {
+        contactLinks.map((link) => (
+          <a
+            href={link.url}
+            target={link.url.startsWith('mailto') ? '_self' : '_blank'}
+            rel="noopener noreferrer"
+            class={`social-link contact-link inline-flex items-center rounded-md border px-6 py-2.5 bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900`}
+            style={`color: ${link.color}; border-color: ${link.color}20;`}
+            aria-label={link.ariaLabel}
+          >
+            <svg
+              class="social-icon mr-3 h-5 w-5"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+              set:html={link.icon}
+            />
+            <span>{link.name}</span>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<!-- The styles of this component are now centralized in global.css -->
+
+<script>
+  // Viewport section detection for animations
+  document.addEventListener('DOMContentLoaded', () => {
+    const contactSection = document.getElementById('contact');
+
+    // Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+
+    if (contactSection && !prefersReducedMotion) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const links = contactSection.querySelectorAll('.contact-link');
+
+              links.forEach((link, index) => {
+                setTimeout(() => {
+                  link.classList.add('animate-in');
+                }, index * 100); // Staggered animation
+              });
+
+              // Only need to observe once
+              observer.unobserve(contactSection);
+            }
+          });
+        },
+        { threshold: 0.2 },
+      );
+
+      observer.observe(contactSection);
+    } else if (contactSection && prefersReducedMotion) {
+      // If user prefers reduced motion, apply the classes immediately
+      const links = contactSection.querySelectorAll('.contact-link');
+      links.forEach((link) => link.classList.add('animate-in'));
+    }
+  });
+</script>

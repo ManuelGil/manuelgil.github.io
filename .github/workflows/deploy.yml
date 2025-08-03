@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   # Trigger the workflow every time you push to the `main` branch
-  # Using a different branch name? Replace `main` with your branch’s name
+  # Using a different branch name? Replace `main` with your branch's name
   push:
     branches: [ main ]
   # Allows you to run this workflow manually from the Actions tab on GitHub.
@@ -17,9 +17,6 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      PUBLIC_API_URL: ${{ secrets.PUBLIC_API_URL }}
-      PUBLIC_USE_MOCK_API: ${{ secrets.PUBLIC_USE_MOCK_API }}
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v4

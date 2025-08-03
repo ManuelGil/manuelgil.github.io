@@ -1,8 +1,11 @@
 ---
-import CategoryFilter from '../components/CategoryFilter.astro';
-import Footer from '../components/Footer.astro';
-import Hero from '../components/Hero.astro';
-import ProjectGrid from '../components/ProjectGrid.astro';
+import CategoryFilter from '../components/sections/CategoryFilter.astro';
+import Footer from '../components/ui/Footer.astro';
+import Hero from '../components/sections/Hero.astro';
+import ProjectGrid from '../components/sections/ProjectGrid.astro';
+import SkillsSection from '../components/sections/SkillsSection.astro';
+import AboutSection from '../components/sections/AboutSection.astro';
+import ContactSection from '../components/sections/ContactSection.astro';
 import Layout from '../layouts/Layout.astro';
 import { defaultProjects } from '../data/defaultProjects';
 
@@ -16,15 +19,58 @@ const categories = [
 ];
 ---
 
-<Layout title="Manuel Gil - Open Source Portfolio">
-  <main class="min-h-screen bg-gray-900">
+<Layout
+  title="Manuel Gil - Open Source Portfolio"
+  description="Open source advocate and software engineer specializing in web development, showcasing various projects and technical skills."
+  type="website"
+>
+  <main id="main-content" class="min-h-screen bg-gray-900">
     <Hero />
 
     <!-- Projects Section -->
-    <section class="bg-gray-100 px-4 py-16 sm:px-6 lg:px-8">
+    <section
+      id="projects-section"
+      class="bg-gray-100 px-4 py-16 sm:px-6 lg:px-8"
+      aria-labelledby="projects-heading"
+    >
+      <h2 class="section-title text-gray-900">Featured Projects</h2>
+      <p class="mx-auto mb-8 max-w-2xl text-center text-gray-600">
+        Browse a collection of my recent open source projects and work. Filter
+        by category to find specific technologies.
+      </p>
       <CategoryFilter categories={categories} />
       <ProjectGrid projects={projects} />
     </section>
+
+    <!-- Skills Section -->
+    <SkillsSection />
+
+    <!-- About Section -->
+    <AboutSection />
+
+    <!-- Contact Section -->
+    <ContactSection />
+
+    <!-- Structured Schema Data for SEO -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Manuel Gil - Open Source Portfolio",
+        "description": "Portfolio showcasing open source projects and technical skills",
+        "url": "https://manuelgil.me",
+        "mainEntity": {
+          "@type": "Person",
+          "name": "Manuel Gil",
+          "jobTitle": "Software Engineer",
+          "url": "https://manuelgil.me",
+          "sameAs": [
+            "https://github.com/ManuelGil",
+            "https://linkedin.com/in/manuelgil"
+          ]
+        }
+      }
+    </script>
 
     <Footer />
   </main>
@@ -33,5 +79,16 @@ const categories = [
 <style>
   html {
     scroll-behavior: smooth;
+  }
+
+  /* Improved focus styles for accessibility */
+  :focus-visible {
+    outline: 3px solid #ff6b00;
+    outline-offset: 2px;
+  }
+
+  /* Smooth transitions between sections */
+  section {
+    transition: background-color 0.5s ease;
   }
 </style>

@@ -1,59 +1,129 @@
 ---
+import Navigation from '../components/ui/Navigation.astro';
+import '../styles/global.css';
+
 interface Props {
   title: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
 }
 
-const { title } = Astro.props;
+const {
+  title,
+  description = 'Open Source Portfolio - Showcasing modern web development projects and skills',
+  type = 'website',
+} = Astro.props;
+
+// Site metadata
+const siteName = 'Manuel Gil - Portfolio';
+const siteUrl = 'https://manuelgil.me';
+const twitterHandle = '@manuelgil';
+
+// Current URL for canonical link
+const canonicalURL = new URL(Astro.url.pathname, siteUrl).toString();
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- Favicon and app icons -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="manifest" href="/site.webmanifest" />
-    <meta name="msapplication-TileColor" content="#da532c" />
+    <meta name="msapplication-TileColor" content="#ff6b00" />
     <meta name="theme-color" content="#ffffff" />
 
     <!-- Performance optimizations -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="dns-prefetch" href="https://api.example.com" />
+    <link rel="dns-prefetch" href="https://api.github.com" />
 
-    <!-- Resource hints -->
+    <!-- Resource hints for critical assets -->
     <link rel="preload" as="image" href="/favicon.ico" />
 
     <meta name="generator" content={Astro.generator} />
 
-    <meta
-      name="description"
-      content="Open Source Portfolio - Showcasing developer projects"
-    />
+    <!-- Primary Meta Tags -->
+    <meta name="description" content={description} />
     <meta name="author" content="Manuel Gil" />
-
-    <link rel="canonical" href="https://manuelgil.me/" />
-
-    <meta name="robots" content="index" />
-
-    <!-- Open Graph / Social Media Meta Tags -->
-    <meta property="og:title" content={title} />
     <meta
-      property="og:description"
-      content="Open Source Portfolio - Showcasing developer projects"
+      name="keywords"
+      content="portfolio, web development, projects, developer, open source, frontend, software engineer"
     />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://manuelgil.me/" />
+
+    <!-- Canonical link for SEO -->
+    <link rel="canonical" href={canonicalURL} />
+
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / Facebook Meta Tags -->
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content={twitterHandle} />
+    <meta name="twitter:creator" content={twitterHandle} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
 
     <title>{title}</title>
 
-    <!-- Inline critical CSS -->
+    <!-- Structured data for SEO (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "ProfilePage",
+        "name": "Manuel Gil's Portfolio",
+        "description": "Personal portfolio showcasing web development projects and skills",
+        "url": "https://manuelgil.me",
+        "author": {
+          "@type": "Person",
+          "name": "Manuel Gil",
+          "url": "https://manuelgil.me",
+          "jobTitle": "Software Engineer"
+        },
+        "mainEntity": {
+          "@type": "Person",
+          "name": "Manuel Gil",
+          "url": "https://manuelgil.me",
+          "sameAs": [
+            "https://github.com/ManuelGil",
+            "https://linkedin.com/in/manuelgil"
+          ]
+        }
+      }
+    </script>
+
+    <!-- Inline critical CSS for faster first paint -->
     <style is:inline>
-      /* Critical CSS para el primer render */
+      /* Critical CSS for first render */
       body {
         margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          Roboto,
+          Oxygen,
+          Ubuntu,
+          Cantarell,
+          'Open Sans',
+          'Helvetica Neue',
+          sans-serif;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
       }
       .min-h-screen {
         min-height: 100vh;
@@ -61,9 +131,34 @@ const { title } = Astro.props;
       .bg-gray-900 {
         background-color: #111827;
       }
+      .pt-16 {
+        padding-top: 4rem;
+      }
     </style>
   </head>
   <body>
-    <slot />
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-black focus:outline-none"
+      >Skip to main content</a
+    >
+    <Navigation />
+    <!-- Add space for fixed navigation -->
+    <div class="pt-16">
+      <slot />
+    </div>
+
+    <!-- Preload critical resources when the user is idle -->
+    <script>
+      // Use requestIdleCallback to load non-critical resources when browser is idle
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => {
+          // Preload potential navigation targets
+          const prefetcher = document.createElement('link');
+          prefetcher.rel = 'prefetch';
+          document.head.appendChild(prefetcher);
+        });
+      }
+    </script>
   </body>
 </html>

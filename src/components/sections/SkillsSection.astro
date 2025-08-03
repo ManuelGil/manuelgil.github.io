@@ -1,0 +1,126 @@
+---
+import { skillCategories } from '../../data/skills';
+---
+
+<section
+  id="skills"
+  class="bg-gray-900 px-4 py-16 sm:px-6 lg:px-8"
+  aria-labelledby="skills-heading"
+>
+  <div class="container">
+    <div class="text-center">
+      <h2 id="skills-heading" class="section-title text-white">
+        Skills and Technologies
+      </h2>
+      <p class="mx-auto mb-8 mt-4 max-w-2xl text-gray-400">
+        My technical skill set includes frontend, backend, and DevOps
+        technologies, with a focus on web development and tools.
+      </p>
+    </div>
+
+    <div class="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
+      {
+        skillCategories.map((category) => (
+          <div class="skill-card rounded-lg bg-gray-800 p-6 shadow-lg">
+            <div class="mb-4 flex items-center">
+              <div class="group mr-3 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white">
+                <span
+                  class="material-symbols-outlined transition-transform group-hover:scale-110"
+                  aria-hidden="true"
+                >
+                  {category.icon}
+                </span>
+              </div>
+              <h3 class="text-xl font-bold text-white">{category.name}</h3>
+            </div>
+
+            <ul class="space-y-3">
+              {category.skills.map((skill) => (
+                <li class="skill-item group">
+                  <div class="flex items-center justify-between">
+                    <span class="inline-block rounded-md px-2 py-1 text-gray-300 transition-all group-hover:bg-gray-700 group-hover:text-white">
+                      {skill.name}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Styles managed in global.css -->
+
+<!-- Load Material Symbols icons -->
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+/>
+
+<script>
+  // Simplified animation when scrolling to the section
+  document.addEventListener('DOMContentLoaded', () => {
+    const skillsSection = document.getElementById('skills');
+
+    // Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+
+    if (skillsSection && !prefersReducedMotion) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            // Animate all cards with a staggered delay
+            const cards = skillsSection.querySelectorAll('.skill-card');
+            cards.forEach((card, i) => {
+              setTimeout(() => {
+                card.classList.add('animate-in');
+              }, i * 150);
+            });
+
+            // Animate all skill items afterward
+            setTimeout(() => {
+              const items = skillsSection.querySelectorAll('.skill-item');
+              items.forEach((item, i) => {
+                setTimeout(() => {
+                  item.classList.add('animate-in');
+                }, i * 50);
+              });
+            }, 300);
+
+            observer.unobserve(skillsSection);
+          }
+        },
+        { threshold: 0.1 },
+      );
+
+      observer.observe(skillsSection);
+    } else if (skillsSection) {
+      // Show everything immediately if reduced motion is preferred
+      document
+        .querySelectorAll('.skill-card, .skill-item')
+        .forEach((el) => el.classList.add('animate-in'));
+    }
+  });
+</script>
+
+<style>
+  /* Minimal styles for animations */
+  .skill-card,
+  .skill-item {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.5s ease,
+      transform 0.5s ease;
+  }
+
+  .animate-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>

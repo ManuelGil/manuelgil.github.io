@@ -7,4 +7,6 @@ export interface Project {
     source: string;
     demo: string;
   };
+  image?: string;
+  date?: string;
 }
