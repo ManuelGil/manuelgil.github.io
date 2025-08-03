@@ -44,9 +44,6 @@ const { categories } = Astro.props;
         if (defaultBtn) {
           this.handleCategoryClick(defaultBtn as HTMLButtonElement);
         } else {
-          console.warn(
-            '[CategoryFilter][constructor] no "All" button found – running filter directly',
-          );
           this.filterProjects();
         }
       }

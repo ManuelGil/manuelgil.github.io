@@ -110,13 +110,23 @@
       mobileMenuButton?.getAttribute('aria-expanded') === 'true';
 
     if (isExpanded) {
+      // Hide the menu
       mobileMenu?.classList.remove('translate-y-0', 'opacity-100');
       mobileMenu?.classList.add('-translate-y-full', 'opacity-0');
       menuIcon?.classList.remove('rotate-90');
+      // Add the 'hidden' class after the transition
+      setTimeout(() => {
+        mobileMenu?.classList.add('hidden');
+      }, 300); // Match Tailwind's duration-300
     } else {
-      mobileMenu?.classList.remove('-translate-y-full', 'opacity-0');
-      mobileMenu?.classList.add('translate-y-0', 'opacity-100');
-      menuIcon?.classList.add('rotate-90');
+      // Show the menu (first remove hidden)
+      mobileMenu?.classList.remove('hidden');
+      // Small timeout to ensure the DOM updates
+      setTimeout(() => {
+        mobileMenu?.classList.remove('-translate-y-full', 'opacity-0');
+        mobileMenu?.classList.add('translate-y-0', 'opacity-100');
+        menuIcon?.classList.add('rotate-90');
+      }, 10);
     }
 
     mobileMenuButton?.setAttribute('aria-expanded', (!isExpanded).toString());
@@ -131,6 +141,10 @@
       mobileMenu?.classList.remove('translate-y-0', 'opacity-100');
       mobileMenu?.classList.add('-translate-y-full', 'opacity-0');
       menuIcon?.classList.remove('rotate-90');
+      // Add the 'hidden' class after the transition
+      setTimeout(() => {
+        mobileMenu?.classList.add('hidden');
+      }, 300); // Match Tailwind's duration-300
     });
   });
 

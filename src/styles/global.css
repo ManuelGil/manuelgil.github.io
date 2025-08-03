@@ -498,6 +498,32 @@ section {
   animation: spin 1s linear infinite;
 }
 
+/* Classes for icon fonts and fallbacks */
+.icon-font.hidden,
+.icon-fallback.hidden {
+  display: none !important;
+}
+
+/* Improvements for mobile visibility */
+@media (max-width: 640px) {
+  svg {
+    /* Ensure SVGs are visible on mobile */
+    display: inline-block !important;
+    visibility: visible !important;
+  }
+
+  /* Adjustments for icon buttons on mobile */
+  .inline-flex.items-center {
+    justify-content: center;
+  }
+
+  /* Spacing for mobile menu */
+  #mobile-menu {
+    max-height: calc(100vh - 70px);
+    overflow-y: auto;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

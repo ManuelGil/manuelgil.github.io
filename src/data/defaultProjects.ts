@@ -172,6 +172,28 @@ export const defaultProjects: Project[] = [
     },
   },
   {
+    title: 'CodeLog+',
+    description:
+      'Effortlessly add, manage, and customize log statements across multiple languages in VSCode. Streamline your debugging workflow with an intuitive interface.',
+    category: 'VSCode Extensions',
+    tags: ['VSCode', 'Logging', 'Productivity', 'Developer Tool'],
+    links: {
+      source: 'https://github.com/ManuelGil/vscode-code-log-plus',
+      demo: 'https://marketplace.visualstudio.com/items?itemName=imgildev.vscode-code-log-plus',
+    },
+  },
+  {
+    title: 'CodeMark+',
+    description:
+      'Easily insert, remove, and highlight custom comments in your code. Enhance code navigation and collaboration in VSCode projects.',
+    category: 'VSCode Extensions',
+    tags: ['VSCode', 'Comments', 'Productivity', 'Developer Tool'],
+    links: {
+      source: 'https://github.com/ManuelGil/vscode-code-mark-plus',
+      demo: 'https://marketplace.visualstudio.com/items?itemName=imgildev.vscode-code-mark-plus',
+    },
+  },
+  {
     title: 'Moodle Pack',
     description:
       'Comprehensive Moodle development tooling for VSCode with snippets and file creation.',
@@ -185,6 +207,17 @@ export const defaultProjects: Project[] = [
 
   // NPM Packages
   {
+    title: 'VSCode Marketplace Client',
+    description:
+      'NPM package to interact with the VSCode Marketplace API. Fetch extensions, versions, and more.',
+    category: 'NPM Packages',
+    tags: ['Node.js', 'NPM', 'VSCode', 'API', 'Developer Tool'],
+    links: {
+      source: 'https://github.com/ManuelGil/vscode-marketplace-client',
+      demo: 'https://www.npmjs.com/package/vscode-marketplace-client',
+    },
+  },
+  {
     title: 'nspin',
     description:
       'Lightweight and efficient Node.js spinner package using native features.',
@@ -197,7 +230,7 @@ export const defaultProjects: Project[] = [
   },
   {
     title: 'nspin-bun',
-    description: 'Spinner package optimized for Bun (ESM-only).',
+    description: 'Ultra-fast spinner package designed for Bun with native ESM support. Perfect for modern CLI tools.',
     category: 'NPM Packages',
     tags: ['Bun', 'ESM', 'CLI', 'Terminal', 'UX'],
     links: {
@@ -208,7 +241,7 @@ export const defaultProjects: Project[] = [
   {
     title: 'nspin-esm',
     description:
-      'Spinner package optimized for ESM (ECMAScript Modules) environments.',
+      'Minimal spinner package built for native ESM environments. Lightweight and ideal for CLI and automation scripts.',
     category: 'NPM Packages',
     tags: ['ESM', 'JavaScript', 'CLI', 'Terminal', 'UX'],
     links: {
@@ -265,7 +298,7 @@ export const defaultProjects: Project[] = [
   {
     title: 'Uninstall Office 2016',
     description:
-      'Batch script to fully uninstall Office 2016/365 or earlier. Useful for sysadmins.',
+      'Completely remove Office 2016/365 and earlier with a single batch script. Ideal for IT professionals and sysadmins.',
     category: 'Windows Utilities',
     tags: ['Windows', 'Office', 'Batch', 'Uninstaller', 'Utility'],
     links: {
@@ -278,7 +311,7 @@ export const defaultProjects: Project[] = [
   {
     title: 'One-Click VSIX',
     description:
-      'Chrome extension to instantly download VSIX from the VSCode Marketplace.',
+      'Download VSIX files from the VSCode Marketplace instantly with a single click. Boosts productivity for extension developers.',
     category: 'Browser Extensions',
     tags: ['Chrome', 'VSCode', 'Extension', 'Productivity', 'Developer Tool'],
     links: {
@@ -291,7 +324,7 @@ export const defaultProjects: Project[] = [
   {
     title: 'Alternate Admin for Moodle',
     description:
-      'Custom admin interface wrapper for Moodle to streamline administrative workflows.',
+      'Redefine Moodle administration with a custom interface that simplifies and accelerates daily tasks.',
     category: 'PHP Projects',
     tags: ['PHP', 'Moodle', 'Admin', 'Education', 'UX'],
     links: {
@@ -302,7 +335,7 @@ export const defaultProjects: Project[] = [
   {
     title: 'Codeigniter 4 with Blade Template Engine',
     description:
-      'Boilerplate for starting CodeIgniter 4 projects with Blade templating (BladeOne).',
+      'Kickstart CodeIgniter 4 projects with integrated BladeOne templating for clean and maintainable code.',
     category: 'PHP Projects',
     tags: ['PHP', 'CodeIgniter', 'Blade', 'Templates', 'Boilerplate'],
     links: {
@@ -313,7 +346,7 @@ export const defaultProjects: Project[] = [
   {
     title: 'Codeigniter 4 with Mustache Template Engine',
     description:
-      'Boilerplate for CodeIgniter 4 with Mustache template integration.',
+      'Start new CodeIgniter 4 projects quickly with seamless Mustache template integration.',
     category: 'PHP Projects',
     tags: ['PHP', 'CodeIgniter', 'Mustache', 'Templates', 'Boilerplate'],
     links: {
@@ -323,7 +356,7 @@ export const defaultProjects: Project[] = [
   },
   {
     title: 'Codeigniter 4 with Twig Template Engine',
-    description: 'Boilerplate for CodeIgniter 4 projects with Twig templates.',
+    description: 'Launch CodeIgniter 4 projects with Twig templating for flexible and modern PHP development.',
     category: 'PHP Projects',
     tags: ['PHP', 'CodeIgniter', 'Twig', 'Templates', 'Boilerplate'],
     links: {
@@ -334,7 +367,7 @@ export const defaultProjects: Project[] = [
   {
     title: 'Project skeleton in PHP',
     description:
-      'Minimal PHP project skeleton with organized structure for fast project bootstrap.',
+      'Bootstrap PHP projects rapidly with a minimal, well-organized skeleton structure.',
     category: 'PHP Projects',
     tags: ['PHP', 'Boilerplate', 'Starter', 'Structure', 'Development'],
     links: {
