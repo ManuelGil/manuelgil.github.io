@@ -127,6 +127,9 @@ const { categories } = Astro.props;
             emptyState.style.display = 'none';
           }
         }
+
+        // Notify that the layout has changed
+        window.dispatchEvent(new CustomEvent('layoutChanged'));
       }
     }
 

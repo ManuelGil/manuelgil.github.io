@@ -10,7 +10,7 @@ export const skillCategories: SkillCategory[] = [
       { name: 'JavaScript' },
       { name: 'TypeScript' },
       { name: 'Angular (v6, v19)' },
-      { name: 'Vue.js (v2)' },
+      { name: 'Vue.js (v2, v3)' },
       { name: 'Bootstrap (v3, v4, v5)' },
       { name: 'Tailwind CSS' },
       { name: 'Material Design' },

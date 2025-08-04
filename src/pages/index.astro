@@ -1,22 +1,11 @@
 ---
-import CategoryFilter from '../components/sections/CategoryFilter.astro';
-import Footer from '../components/ui/Footer.astro';
-import Hero from '../components/sections/Hero.astro';
-import ProjectGrid from '../components/sections/ProjectGrid.astro';
-import SkillsSection from '../components/sections/SkillsSection.astro';
 import AboutSection from '../components/sections/AboutSection.astro';
 import ContactSection from '../components/sections/ContactSection.astro';
+import Hero from '../components/sections/Hero.astro';
+import ProjectsSection from '../components/sections/ProjectsSection.astro';
+import SkillsSection from '../components/sections/SkillsSection.astro';
+import Footer from '../components/ui/Footer.astro';
 import Layout from '../layouts/Layout.astro';
-import { defaultProjects } from '../data/defaultProjects';
-
-// Use default projects for initial SSR
-const projects = defaultProjects;
-
-// Extract unique categories and add 'All' option
-const categories = [
-  'All',
-  ...new Set(projects.map((project) => project.category)),
-];
 ---
 
 <Layout
@@ -28,19 +17,7 @@ const categories = [
     <Hero />
 
     <!-- Projects Section -->
-    <section
-      id="projects-section"
-      class="bg-gray-100 px-4 py-16 sm:px-6 lg:px-8"
-      aria-labelledby="projects-heading"
-    >
-      <h2 class="section-title text-gray-900">Featured Projects</h2>
-      <p class="mx-auto mb-8 max-w-2xl text-center text-gray-600">
-        Browse a collection of my recent open source projects and work. Filter
-        by category to find specific technologies.
-      </p>
-      <CategoryFilter categories={categories} />
-      <ProjectGrid projects={projects} />
-    </section>
+    <ProjectsSection />
 
     <!-- Skills Section -->
     <SkillsSection />

@@ -21,7 +21,7 @@
         >Home</a
       >
       <a
-        href="#projects"
+        href="#projects-section"
         class="nav-link relative text-gray-700 transition-colors hover:text-primary"
         >Projects</a
       >
@@ -77,7 +77,7 @@
         >Home</a
       >
       <a
-        href="#projects"
+        href="#projects-section"
         class="nav-link-mobile relative py-2 text-gray-700 transition-all hover:text-primary"
         >Projects</a
       >
@@ -150,7 +150,7 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     const sections = document.querySelectorAll(
-      'section[id], header[id], div[id="projects"]',
+      'section[id], header[id]',
     );
     const navLinks = document.querySelectorAll('.nav-link');
     const mobileNavLinks = document.querySelectorAll('.nav-link-mobile');
@@ -182,20 +182,20 @@
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+          if (entry.isIntersecting && entry.intersectionRatio > 0.2) {
             const id = entry.target.getAttribute('id');
             activateLink(id);
           }
         });
       },
-      { threshold: 0.5, rootMargin: '-100px 0px -20% 0px' },
+      { threshold: 0.2, rootMargin: '-60px 0px -10% 0px' },
     );
 
     sections.forEach((section) => {
       observer.observe(section);
     });
 
-    const checkInitialActive = () => {
+    const updateActiveLink = () => {
       let found = false;
       for (const section of sections) {
         const rect = section.getBoundingClientRect();
@@ -206,11 +206,63 @@
         }
       }
       if (!found && sections.length > 0) {
-        activateLink(sections[0].id);
+        // Fallback to the first section if none are active
+        // activateLink(sections[0].id);
       }
     };
 
-    checkInitialActive();
+    // Listen for layout changes from other components (like project filter)
+    window.addEventListener('layoutChanged', updateActiveLink);
+    
+    // Special check function that only activates when the section is truly the most prominent
+    const checkSections = () => {
+      // Get all sections that could be currently visible
+      const allSections = Array.from(sections);
+      
+      // Calculate how much of each section is visible
+      const visibleSections = allSections.map(section => {
+        const rect = section.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        
+        // Calculate visible height of the section
+        const visibleTop = Math.max(0, rect.top);
+        const visibleBottom = Math.min(windowHeight, rect.bottom);
+        const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+        
+        // Calculate what percentage of the viewport this section occupies
+        const visibilityRatio = visibleHeight / windowHeight;
+        
+        return {
+          id: section.id,
+          visibilityRatio: visibilityRatio
+        };
+      }).filter(s => s.visibilityRatio > 0);
+      
+      // Find the section with the most visibility
+      if (visibleSections.length > 0) {
+        const mostVisibleSection = visibleSections.reduce((prev, current) => 
+          prev.visibilityRatio > current.visibilityRatio ? prev : current
+        );
+        
+        // Only activate if it's significantly visible (more than 15% of viewport)
+        if (mostVisibleSection.visibilityRatio > 0.15) {
+          activateLink(mostVisibleSection.id);
+        }
+      }
+    };
+    
+    // Throttled scroll handler to avoid performance issues
+    let scrollTimeout;
+    window.addEventListener('scroll', () => {
+      if (!scrollTimeout) {
+        scrollTimeout = setTimeout(() => {
+          checkSections();
+          scrollTimeout = null;
+        }, 100); // Check every 100ms during scroll
+      }
+    }, { passive: true });
+    
+    updateActiveLink();
   });
 </script>
 

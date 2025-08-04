@@ -230,7 +230,8 @@ export const defaultProjects: Project[] = [
   },
   {
     title: 'nspin-bun',
-    description: 'Ultra-fast spinner package designed for Bun with native ESM support. Perfect for modern CLI tools.',
+    description:
+      'Ultra-fast spinner package designed for Bun with native ESM support. Perfect for modern CLI tools.',
     category: 'NPM Packages',
     tags: ['Bun', 'ESM', 'CLI', 'Terminal', 'UX'],
     links: {
@@ -356,7 +357,8 @@ export const defaultProjects: Project[] = [
   },
   {
     title: 'Codeigniter 4 with Twig Template Engine',
-    description: 'Launch CodeIgniter 4 projects with Twig templating for flexible and modern PHP development.',
+    description:
+      'Launch CodeIgniter 4 projects with Twig templating for flexible and modern PHP development.',
     category: 'PHP Projects',
     tags: ['PHP', 'CodeIgniter', 'Twig', 'Templates', 'Boilerplate'],
     links: {
